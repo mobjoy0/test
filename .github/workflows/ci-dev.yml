@@ -1,0 +1,48 @@
+name: CI – dev (staging)
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }} 
+
+jobs:
+  build-and-deploy-staging:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write  
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+
+      - name: Save image tag to file
+        run: echo "${{ github.sha }}" > image-tag.txt
+
+      - name: Upload image tag as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag         
+          path: image-tag.txt
+          retention-days: 30     
+
+      # Update staging overlay in mashroom-manifests
