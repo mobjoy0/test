@@ -88,7 +88,7 @@ jobs:
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'pipeline.yml',
+              workflow_id: '_pipeline.yml',
               event: 'pull_request',
               status: 'success',
               per_page: 5
@@ -176,7 +176,7 @@ jobs:
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'pipeline.yml',
+              workflow_id: '_pipeline.yml',
               branch: 'dev',
               event: 'push',
               status: 'success',
